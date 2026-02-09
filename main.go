@@ -54,10 +54,10 @@ func main() {
 
 	fmt.Printf("✅ Loaded %d exoplanets!\n\n", len(planets))
 
-	// search functionality
+	// Search functionality
 	fmt.Print("🔍 Search for a planet/star (or press Enter to skip): ")
 	var search string
-	// fmt.Scanln(&search) --deleteME
+
 	reader := bufio.NewReader(os.Stdin)
 	search, _ = reader.ReadString('\n')
 	search = strings.TrimSpace(search)
@@ -132,10 +132,10 @@ func main() {
 
 	fmt.Println(strings.Repeat("-", 90))
 
-	// statistics
+	// Statistics
 	showStats(planets)
 
-	// save option
+	// Save option
 	fmt.Print("\n💾 Save results to file? (y/n): ")
 	var save string
 	fmt.Scan(&save)
@@ -169,24 +169,75 @@ func showStats(planets []Exoplanet) {
 	fmt.Printf("   📏 Avg radius: %.2f Earth radii\n", totalRadius/total)
 }
 
+// SAVE TO JSOM FILE
 func saveToFile(planets []Exoplanet) {
-	f, err := os.Create("exoplanets_results.txt")
+	// clear the input buffer first
+	reader := bufio.NewReader(os.Stdin)
+	reader.ReadString('\n') // consume the leftover newline from the y/n prompt
+	
+	// ask for filename
+	fmt.Print("📝 Enter filename (default: exoplanets_results.json): ")
+	filename, _ := reader.ReadString('\n')
+	filename = strings.TrimSpace(filename)
+
+	if filename == "" {
+		filename = "exoplanets_results.json"
+	}
+
+	// add .json extension if not present
+	if !strings.HasSuffix(filename, ".json") {
+		filename += ".json"
+	}
+
+	// check if file exists
+	if _, err := os.Stat(filename); err == nil {
+		fmt.Print("⚠️  File exists! Overwrite? (y/n): ")
+		var confirm string
+		fmt.Scan(&confirm)
+		if confirm != "y" && confirm != "Y" {
+			fmt.Println("❌ Save cancelled")
+			return
+		}
+	}
+
+	// convert to JSON with nice formatting
+	jsonData, err := json.MarshalIndent(planets, "", "  ")
+	if err != nil {
+		fmt.Println("❌ Error converting to JSON:", err)
+		return
+	}
+
+	// write to file
+	err = os.WriteFile(filename, jsonData, 0644)
 	if err != nil {
 		fmt.Println("❌ Error saving:", err)
 		return
 	}
-	defer f.Close()
 
-	fmt.Fprintf(f, "NASA Exoplanet Search Results\n")
-	fmt.Fprintf(f, "%s", strings.Repeat("=", 80)+"\n\n")
-
-	for _, p := range planets {
-		fmt.Fprintf(f, "Planet: %s\n", p.PlanetName)
-		fmt.Fprintf(f, "  Host Star: %s\n", p.Hostname)
-		fmt.Fprintf(f, "  Discovery Year: %d\n", p.DiscYear)
-		fmt.Fprintf(f, "  Radius: %.2f Earth radii\n", p.Radius)
-		fmt.Fprintf(f, "  Distance: %.1f parsecs\n\n", p.Distance)
-	}
-
-	fmt.Println("✅ Saved to exoplanets_results.txt")
+	fmt.Printf("✅ Saved %d planets to %s\n", len(planets), filename)
 }
+
+//  SAVE TO TEXT FILE
+
+// func saveToFile - TEXT FILE
+// (planets []Exoplanet) {
+// 	f, err := os.Create("exoplanets_results.txt")
+// 	if err != nil {
+// 		fmt.Println("❌ Error saving:", err)
+// 		return
+// 	}
+// 	defer f.Close()
+
+// 	fmt.Fprintf(f, "NASA Exoplanet Search Results\n")
+// 	fmt.Fprintf(f, "%s", strings.Repeat("=", 80)+"\n\n")
+
+// 	for _, p := range planets {
+// 		fmt.Fprintf(f, "Planet: %s\n", p.PlanetName)
+// 		fmt.Fprintf(f, "  Host Star: %s\n", p.Hostname)
+// 		fmt.Fprintf(f, "  Discovery Year: %d\n", p.DiscYear)
+// 		fmt.Fprintf(f, "  Radius: %.2f Earth radii\n", p.Radius)
+// 		fmt.Fprintf(f, "  Distance: %.1f parsecs\n\n", p.Distance)
+// 	}
+
+// 	fmt.Println("✅ Saved to exoplanets_results.txt")
+// }
