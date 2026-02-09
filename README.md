@@ -19,5 +19,9 @@
 ## Save results to file(it over-wirtes rn/atm)
 <img width="530" height="720" alt="image" src="https://github.com/user-attachments/assets/29c88aab-9f36-4be7-bc40-f31056d6987d" />
 
+## Save to Json File With Options for File Name
+<img width="808" height="594" alt="image" src="https://github.com/user-attachments/assets/8e792467-22dd-43af-987c-c11d196c6d7c" />
+
+
 
 
