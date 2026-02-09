@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -53,10 +54,13 @@ func main() {
 
 	fmt.Printf("✅ Loaded %d exoplanets!\n\n", len(planets))
 
-	// Search functionality
+	// search functionality
 	fmt.Print("🔍 Search for a planet/star (or press Enter to skip): ")
 	var search string
-	fmt.Scanln(&search)
+	// fmt.Scanln(&search) --deleteME
+	reader := bufio.NewReader(os.Stdin)
+	search, _ = reader.ReadString('\n')
+	search = strings.TrimSpace(search)
 
 	if search != "" {
 		filtered := []Exoplanet{}
@@ -128,10 +132,10 @@ func main() {
 
 	fmt.Println(strings.Repeat("-", 90))
 
-	// Statistics
+	// statistics
 	showStats(planets)
 
-	// Save option
+	// save option
 	fmt.Print("\n💾 Save results to file? (y/n): ")
 	var save string
 	fmt.Scan(&save)
@@ -174,7 +178,7 @@ func saveToFile(planets []Exoplanet) {
 	defer f.Close()
 
 	fmt.Fprintf(f, "NASA Exoplanet Search Results\n")
-	fmt.Fprintf(f, strings.Repeat("=", 80)+"\n\n")
+	fmt.Fprintf(f, "%s", strings.Repeat("=", 80)+"\n\n")
 
 	for _, p := range planets {
 		fmt.Fprintf(f, "Planet: %s\n", p.PlanetName)
