@@ -241,3 +241,6 @@ func saveToFile(planets []Exoplanet) {
 
 // 	fmt.Println("✅ Saved to exoplanets_results.txt")
 // }
+
+
+//TODO: add err log file and terraform
